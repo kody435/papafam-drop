@@ -27,6 +27,7 @@ function NFTDropPage({ collection }: Props) {
     if (!nftDrop) return;
 
     const fetchNFTDropData = async () => {
+      setLoading(true);
 
       const claimedNFTs = await (await contract).getAllClaimed();
       setClaimedSupply(claimedNFTs.length);

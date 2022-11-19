@@ -21,18 +21,21 @@ function NFTDropPage({ collection }: Props) {
   const connectWithMetaMask = useMetamask();
   const address = useAddress();
   const disconnect = useDisconnect();
+  const [loading, setLoading] = useState<boolean>(true);
 
 
   useEffect(() => {
     if (!nftDrop) return;
 
     const fetchNFTDropData = async () => {
+      setLoading(true);
 
       const claimedNFTs = await (await contract).getAllClaimed();
       setClaimedSupply(claimedNFTs.length);
       const totalSupply = await (await contract).totalSupply();
       setTotalSupply(totalSupply);
 
+      setLoading(false);
     }
     fetchNFTDropData();
   },[contract, nftDrop]);
@@ -72,8 +75,11 @@ function NFTDropPage({ collection }: Props) {
               <div className='mt-4 flex flex-1 flex-col items-center space-y-2 text-center lg:space-y-0 lg:justify-center '>
                   <img className='w-80 object-cover pb-10 lg:h-40' src="https://cdn.sanity.io/images/9ep8u6nk/production/f72570921cab407c11a39c8e1717f5607718e14d-2951x2430.webp" alt='' />
                   <h1 className='text-3xl font-bold text-white lg:text-5xl lg:font-extrabold '>The PAPAFAM Ape Coding Club | NFT Drop</h1>
-                  
+                  {loading ?(
+                    <p className='pt-2 text-xl text-red-400 animate-pulse'>Loading Supply Count ...</p>
+                  ):(
                   <p className='pt-2 text-xl text-green-500'>{claimedSupply} / {totalSupply?.toString()} NFT's Claimed</p>  
+                  )
                 </div>
 
           {/* Mint Button */}

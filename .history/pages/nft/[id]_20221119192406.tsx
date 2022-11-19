@@ -21,18 +21,21 @@ function NFTDropPage({ collection }: Props) {
   const connectWithMetaMask = useMetamask();
   const address = useAddress();
   const disconnect = useDisconnect();
+  const [loading, setLoading] = useState<boolean>(true);
 
 
   useEffect(() => {
     if (!nftDrop) return;
 
     const fetchNFTDropData = async () => {
+      setLoading(true);
 
       const claimedNFTs = await (await contract).getAllClaimed();
       setClaimedSupply(claimedNFTs.length);
       const totalSupply = await (await contract).totalSupply();
       setTotalSupply(totalSupply);
 
+      setLoading(false);
     }
     fetchNFTDropData();
   },[contract, nftDrop]);
