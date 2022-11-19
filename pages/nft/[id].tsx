@@ -2,19 +2,23 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useEffect } from 'react'
 import Link from "next/link";
-import { useAddress, useDisconnect, useMetamask, useNFTDrop } from "@thirdweb-dev/react";
+import { useAddress, useDisconnect, useMetamask, useContract } from "@thirdweb-dev/react";
 import { useState } from "react";
 import { Collection } from "../../typings"
+import { BigNumber } from "ethers";
+import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+
+const sdk = new ThirdwebSDK("goerli");
 
 interface Props {
   collection: Collection
 }
 
-function NFTDropPage({collection}: Props) {
-
+function NFTDropPage({ collection }: Props) {
+  const contract =  sdk.getContract("0x2F11a5296C8ba753e7f63D58a07f5ACB4fe10a12", "nft-drop");
   const [claimedSupply, setClaimedSupply] = useState<number>(0);
-  const [totalSupply, setTotalSupply] = useState<number>(0);
-  const nftDrop = useNFTDrop(collection.address);
+  const [totalSupply, setTotalSupply] = useState<BigNumber>();
+  const nftDrop = useContract("{{collection.address}}",);
   const connectWithMetaMask = useMetamask();
   const address = useAddress();
   const disconnect = useDisconnect();
@@ -24,10 +28,13 @@ function NFTDropPage({collection}: Props) {
     if (!nftDrop) return;
 
     const fetchNFTDropData = async () => {
-      const claimed = await nftDrop.getAllClaimed();
+      const claimedNFTs = await (await contract).getAllClaimed();
+      setClaimedSupply(claimedNFTs.length);
+      const totalSupply = await (await contract).totalSupply();
+      setTotalSupply(totalSupply);
     }
     fetchNFTDropData();
-  }, [nftDrop]);
+  });
 
   return (
     <div className='flex h-screen flex-col lg:grid lg:grid-cols-10  '>
@@ -64,7 +71,7 @@ function NFTDropPage({collection}: Props) {
               <div className='mt-4 flex flex-1 flex-col items-center space-y-2 text-center lg:space-y-0 lg:justify-center '>
                   <img className='w-80 object-cover pb-10 lg:h-40' src="https://cdn.sanity.io/images/9ep8u6nk/production/f72570921cab407c11a39c8e1717f5607718e14d-2951x2430.webp" alt='' />
                   <h1 className='text-3xl font-bold text-white lg:text-5xl lg:font-extrabold '>The PAPAFAM Ape Coding Club | NFT Drop</h1>
-                  <p className='pt-2 text-xl text-green-500'>13 / 21 NFT's Claimed</p>
+                  <p className='pt-2 text-xl text-green-500'>{claimedSupply}/{totalSupply?.toString()} NFT's Claimed</p>
                 </div>
 
           {/* Mint Button */}
