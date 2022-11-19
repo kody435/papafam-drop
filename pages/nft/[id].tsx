@@ -1,15 +1,33 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @next/next/no-img-element */
-import React from 'react'
+import React, { useEffect } from 'react'
 import Link from "next/link";
 import { useAddress, useDisconnect, useMetamask, useNFTDrop } from "@thirdweb-dev/react";
+import { useState } from "react";
+import { Collection } from "../../typings"
+
+interface Props {
+  collection: Collection
+}
+
+function NFTDropPage({collection}: Props) {
+
+  const [claimedSupply, setClaimedSupply] = useState<number>(0);
+  const [totalSupply, setTotalSupply] = useState<number>(0);
+  const nftDrop = useNFTDrop(collection.address);
+  const connectWithMetaMask = useMetamask();
+  const address = useAddress();
+  const disconnect = useDisconnect();
 
 
-function NFTDropPage() {
+  useEffect(() => {
+    if (!nftDrop) return;
 
-    const connectWithMetaMask = useMetamask();
-    const address = useAddress();
-    const disconnect = useDisconnect();
+    const fetchNFTDropData = async () => {
+      const claimed = await nftDrop.getAllClaimed();
+    }
+    fetchNFTDropData();
+  }, [nftDrop]);
 
   return (
     <div className='flex h-screen flex-col lg:grid lg:grid-cols-10  '>
