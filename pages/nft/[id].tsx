@@ -73,12 +73,12 @@ function NFTDropPage({ collection }: Props) {
                   <img className='w-80 object-cover pb-10 lg:h-40' src="https://cdn.sanity.io/images/9ep8u6nk/production/f72570921cab407c11a39c8e1717f5607718e14d-2951x2430.webp" alt='' />
                   <h1 className='text-3xl font-bold text-white lg:text-5xl lg:font-extrabold '>The PAPAFAM Ape Coding Club | NFT Drop</h1>
                   
-                  <p className='pt-2 text-xl text-green-500'>{claimedSupply} / {totalSupply?.toString()} NFT's Claimed</p>  
+                  <p className='pt-2 text-xl text-green-500'>{claimedSupply} / {totalSupply?.toNumber()} NFT's Claimed</p>  
                 </div>
 
           {/* Mint Button */}
-          <button className="mt-10 h-16 w-full rounded-full bg-red-600 font-bold text-white disabled:bg-gray-400 disabled:cursor-not-allowed">
-            Mint NFT
+          <button disabled={ claimedSupply === totalSupply?.toNumber() || !address } className="mt-10 h-16 w-full rounded-full bg-red-600 font-bold text-white disabled:bg-gray-400 disabled:cursor-not-allowed">
+            <span className='font-bolder' >Mint NFT (0.01 ETH)</span>
           </button>
         </div>
     </div>
