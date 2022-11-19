@@ -1,9 +1,8 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @next/next/no-img-element */
-import React, { useEffect } from 'react'
+import React, { useEffect , useState } from 'react'
 import Link from "next/link";
 import { useAddress, useDisconnect, useMetamask, useContract } from "@thirdweb-dev/react";
-import { useState } from "react";
 import { Collection } from "../../typings"
 import { BigNumber } from "ethers";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
@@ -18,20 +17,25 @@ function NFTDropPage({ collection }: Props) {
   const contract =  sdk.getContract("0x2F11a5296C8ba753e7f63D58a07f5ACB4fe10a12", "nft-drop");
   const [claimedSupply, setClaimedSupply] = useState<number>(0);
   const [totalSupply, setTotalSupply] = useState<BigNumber>();
-  const nftDrop = useContract("{{collection.address}}",);
+  const nftDrop = useContract("{collection.address}", "nft-drop");
   const connectWithMetaMask = useMetamask();
   const address = useAddress();
   const disconnect = useDisconnect();
+  const [loading, setLoading] = useState<boolean>(true);
 
 
   useEffect(() => {
     if (!nftDrop) return;
 
     const fetchNFTDropData = async () => {
+      setLoading(true);
+
       const claimedNFTs = await (await contract).getAllClaimed();
       setClaimedSupply(claimedNFTs.length);
       const totalSupply = await (await contract).totalSupply();
       setTotalSupply(totalSupply);
+
+      setLoading(false);
     }
     fetchNFTDropData();
   });
