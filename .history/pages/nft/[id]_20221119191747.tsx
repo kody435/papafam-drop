@@ -76,9 +76,10 @@ function NFTDropPage({ collection }: Props) {
                   <img className='w-80 object-cover pb-10 lg:h-40' src="https://cdn.sanity.io/images/9ep8u6nk/production/f72570921cab407c11a39c8e1717f5607718e14d-2951x2430.webp" alt='' />
                   <h1 className='text-3xl font-bold text-white lg:text-5xl lg:font-extrabold '>The PAPAFAM Ape Coding Club | NFT Drop</h1>
                   {loading ?(
-                    <p className='pt-2 text-xl text-red-400 animate-pulse'>Loading Supply Count ...</p>
+            
+            <p className='pt-2 text-xl text-green-500'>{claimedSupply} / {totalSupply?.toString()} NFT's Claimed</p>
                   ):(
-                  <p className='pt-2 text-xl text-green-500'>{claimedSupply} / {totalSupply?.toString()} NFT's Claimed</p>  
+                  <p className='pt-2 text-xl text-red-400 animate-pulse'>Loading Supply Count ...</p>
                   )}
                 </div>
 
