@@ -17,6 +17,8 @@ function NFTDropPage({ collection }: Props) {
   const contract =  sdk.getContract("0x2F11a5296C8ba753e7f63D58a07f5ACB4fe10a12", "nft-drop");
   const [claimedSupply, setClaimedSupply] = useState<number>(0);
   const [totalSupply, setTotalSupply] = useState<BigNumber>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [priceInEth, setPriceInEth] = useState<number>(0);
   const nftDrop = useContract("{collection.address}", "nft-drop");
   const connectWithMetaMask = useMetamask();
   const address = useAddress();
@@ -33,15 +35,24 @@ function NFTDropPage({ collection }: Props) {
       const totalSupply = await (await contract).totalSupply();
       setTotalSupply(totalSupply);
 
+      setLoading(false);
     }
     fetchNFTDropData();
-  },[contract, nftDrop]);
+
+    const fetchPrice = async () => {
+      const claimConditions = await nftDrop.claimConditions.getAll();
+
+      setPriceInEth(claimConditions?.[0].currencyMetadata.displayValue)
+    }
+
+    fetchPrice();
+  }, [contract, nftDrop]);
 
   return (
     <div className='flex h-screen flex-col lg:grid lg:grid-cols-10  '>
         
         {/* LEFT */}
-        <div className='bg-gradient-to-br from-cyan-800 to-rose-500 lg:col-span-4 lg:rounded-r-3xl '>
+        <div className='bg-gradient-to-r from-cyan-500 to-blue-500  lg:from-cyan-400 lg:col-span-4 lg:rounded-r-3xl '>
             <div className='flex flex-col items-center justify-center py-2 lg:min-h-screen'>
                   <div className='bg-gradient-to-br from-yellow-400 to to-purple-600 p-2 rounded-2xl '>
                       <img className='w-44 rounded-xl object-cover lg:h-96 lg:w-72' src="https://cdn.sanity.io/images/9ep8u6nk/production/ee298e2fb78803f3226dcde22f1f2a8d69f56fad-600x600.png" alt='' />
@@ -73,12 +84,25 @@ function NFTDropPage({ collection }: Props) {
                   <img className='w-80 object-cover pb-10 lg:h-40' src="https://cdn.sanity.io/images/9ep8u6nk/production/f72570921cab407c11a39c8e1717f5607718e14d-2951x2430.webp" alt='' />
                   <h1 className='text-3xl font-bold text-white lg:text-5xl lg:font-extrabold '>The PAPAFAM Ape Coding Club | NFT Drop</h1>
                   
-                  <p className='pt-2 text-xl text-green-500'>{claimedSupply} / {totalSupply?.toNumber()} NFT's Claimed</p>  
+          {loading ? (
+            <p className='text-xl text-green-500 animate-pulse'>Loading...</p>
+          ):(
+              <p className='pt-2 text-xl text-green-500'>{claimedSupply} / {totalSupply?.toNumber()} NFT's Claimed</p>  
+          )}
                 </div>
 
           {/* Mint Button */}
-          <button disabled={ claimedSupply === totalSupply?.toNumber() || !address } className="mt-10 h-16 w-full rounded-full bg-red-600 font-bold text-white disabled:bg-gray-400 disabled:cursor-not-allowed">
-            <span className='font-bolder' >Mint NFT (0.01 ETH)</span>
+          <button disabled={ loading || claimedSupply === totalSupply?.toNumber() || !address } className="mt-10 h-16 w-full rounded-full bg-red-600 font-bold text-white disabled:bg-gray-400 disabled:cursor-not-allowed">
+          {loading ? (
+            <p className='text-xl text-white animate-pulse'>Loading...</p>
+          ) : claimedSupply === totalSupply?.toNumber() ? (
+            <p className='text-xl text-white'>All NFT's Claimed</p>
+            ) : !address ? (
+                <p className='text-xl text-white'>Sign in to Mint</p>
+              ) : (
+                  <span className='text-xl text-white font-bold'>Claim NFT</span>
+                )
+        }
           </button>
         </div>
     </div>
